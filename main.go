@@ -42,6 +42,10 @@ func run() {
 		log.Error(err)
 		os.Exit(1)
 	}
+	if err=game.InitialCron();err!=nil{
+		log.Error(err)
+		os.Exit(1)
+	}
 
 	zero.Run(zero.Config{
 		NickName:      conf.ZeroBot.NickName,

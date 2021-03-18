@@ -347,6 +347,11 @@ func companyUnsetOvertime(c *zero.Ctx) error {
 	return nil
 }
 
+func companyShowStuff(c *zero.Ctx) error {
+	//TODO
+	return nil
+}
+
 func (b *Company) EstimateIncome() int64 {
 	efficiency := companyScales[b.ScaleID].Efficiency(b.EmployeeCounts)
 	efficiency += 0.00001 * float32(b.EmployeeEfficiency+b.OwnerEfficiency)

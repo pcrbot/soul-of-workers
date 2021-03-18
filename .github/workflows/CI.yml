@@ -18,9 +18,6 @@ jobs:
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          submodules: true
 
       - name: Setup go
         uses: actions/setup-go@v2
@@ -37,7 +34,7 @@ jobs:
 
       - name: Build Binary
         run: |
-          go build -tags=jsoniter -ldflags="-s -w" -o "dist/sow" .
+          go build -ldflags="-s -w" -o "dist/sow" .
         env:
           CGO_ENABLED: 1
 

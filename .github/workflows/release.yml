@@ -1,0 +1,42 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch: { }
+
+jobs:
+  build:
+    name: Cross Build Go Binaries
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+
+      - name: Cache go modules
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('./go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Build with xgo
+        uses: crazy-max/ghaction-xgo@v1
+        with:
+          xgo_version: latest
+          go_version: 1.16.x
+          dest: dist
+          prefix: sow
+          targets: windows/386,windows/amd64,linux/386,linux/amd64,linux/arm,linux/arm64,darwin/amd64,darwin/arm64
+          v: true
+          ldflags: -s -w
+          buildmode: default
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: executable
+          path: dist/*
