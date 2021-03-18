@@ -32,6 +32,8 @@ func RegisterCommands() error {
 	RegisterToZeroBot("角色改名", companyRename)
 	RegisterToZeroBot("招募员工", companyRecruit)
 	RegisterToZeroBot("设置工资", companySetSalary)
+	RegisterToZeroBot("强制加班", companySetOvertime)
+	RegisterToZeroBot("结束强制加班", companyUnsetOvertime)
 	//RegisterToZeroBot("", )
 	return nil
 }

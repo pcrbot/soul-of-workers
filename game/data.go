@@ -121,10 +121,10 @@ func InitialDB() error {
 	if err != nil {
 		return err
 	}
-	if err = db.AutoMigrate(&Player{}, &Company{}, &CompanyApplication{}, &Npc{}, &NpcNickname{});err != nil {
+	if err = db.AutoMigrate(&Player{}, &Company{}, &CompanyApplication{}, &Npc{}, &NpcNickname{}); err != nil {
 		return err
 	}
-	if err = initialAvailableNpcList();err != nil {
+	if err = initialAvailableNpcList(); err != nil {
 		return err
 	}
 	return nil

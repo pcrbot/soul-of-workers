@@ -259,8 +259,10 @@ func companyRename(c *zero.Ctx) error {
 	if newName == "" {
 		newName = c.Get("请发送新的公司名称")
 	}
-	b.Name = newName
-	if err := b.Save(); err != nil {
+	lock := companyLock.Get(c.Event.UserID)
+	lock.Lock()
+	defer lock.Unlock()
+	if err := db.Model(&b).Update("name", newName).Error; err != nil {
 		return err
 	}
 	c.Send("改名完成，您的新公司名为：\n" + newName)
@@ -285,11 +287,63 @@ func companySetSalary(c *zero.Ctx) error {
 		c.Send("工资必须是整数哦")
 		return nil
 	}
-	b.SalarySetting = salary
-	if err = b.Save(); err != nil {
+	lock := companyLock.Get(c.Event.UserID)
+	lock.Lock()
+	defer lock.Unlock()
+	if err = db.Model(&b).Update("salary_setting", salary).Error; err != nil {
 		return err
 	}
 	c.Send("设置成功")
+	return nil
+}
+
+func companySetOvertime(c *zero.Ctx) error {
+	var b Company
+	if err := db.Limit(1).Find(&b, c.Event.UserID).Error; err != nil {
+		return err
+	}
+	if b.OwnerID == 0 {
+		c.Send("您还没有创建公司呢")
+		return nil
+	}
+	if b.Overtime {
+		c.Send("您的员工们已经在加班了")
+		return nil
+	}
+	lock := companyLock.Get(c.Event.UserID)
+	lock.Lock()
+	defer lock.Unlock()
+	if err := db.Model(&b).Update("overtime", true).Error; err != nil {
+		return err
+	}
+	efficiency := companyScales[b.ScaleID].Efficiency(b.EmployeeCounts)
+	efficiency += 0.00001 * float32(b.EmployeeEfficiency+b.OwnerEfficiency)
+	c.Send(fmt.Sprintf("设置成功，您的公司效率上升了 10%%，现在是%.1f%%", efficiency*100))
+	return nil
+}
+
+func companyUnsetOvertime(c *zero.Ctx) error {
+	var b Company
+	if err := db.Limit(1).Find(&b, c.Event.UserID).Error; err != nil {
+		return err
+	}
+	if b.OwnerID == 0 {
+		c.Send("您还没有创建公司呢")
+		return nil
+	}
+	if !b.Overtime {
+		c.Send("您的员工们并没有加班哦")
+		return nil
+	}
+	lock := companyLock.Get(c.Event.UserID)
+	lock.Lock()
+	defer lock.Unlock()
+	if err := db.Model(&b).Update("overtime", false).Error; err != nil {
+		return err
+	}
+	efficiency := companyScales[b.ScaleID].Efficiency(b.EmployeeCounts)
+	efficiency += 0.00001 * float32(b.EmployeeEfficiency+b.OwnerEfficiency)
+	c.Send(fmt.Sprintf("设置成功，您的公司效率现在是%.1f%%", efficiency*100))
 	return nil
 }
 

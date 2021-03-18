@@ -63,8 +63,8 @@ func initialAvailableNpcList() error {
 
 func RandomAvailableNpc() (*Npc, error) {
 	var c Npc
-	i:=availableNpcList.RandomChoice()
-	err:=db.First(&c,i).Error
+	i := availableNpcList.RandomChoice()
+	err := db.First(&c, i).Error
 	return &c, err
 }
 
