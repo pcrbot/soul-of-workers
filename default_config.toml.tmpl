@@ -1,0 +1,26 @@
+# SOW 配置文件
+# 正向 ws 服务端主机
+Host = "{{ .Host }}"
+
+# 正向 ws 服务端端口
+Port = "{{ .Port }}"
+
+# 正向 ws 令牌码
+AccessToken = "{{ js .AccessToken }}"
+
+# 日志级别
+# LogLevel = "DEBUG"
+# LogLevel = "INFO"
+# LogLevel = "WARNING"
+LogLevel = "{{ .LogLevel }}"
+
+[ZeroBot]
+# BOT 昵称，叫昵称等同于 @BOT
+# NickName = ["机器人", "笨蛋"]
+NickName = [{{ range .ZeroBot.NickName }}'{{ . }}', {{end}}]
+
+# 命令前缀
+CommandPrefix = '{{ .ZeroBot.CommandPrefix }}'
+
+# 主人 QQ
+SuperUsers = [{{ range .ZeroBot.SuperUsers }}"{{ . }}", {{end}}]
